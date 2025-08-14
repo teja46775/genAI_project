@@ -1,0 +1,140 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Subscriptions</h2>
+        <a routerLink="/subscriptions/new" class="btn btn-primary">
+          <i class="fas fa-plus me-2"></i>Add Subscription
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <label for="statusFilter" class="form-label">Status</label>
+              <select 
+                id="statusFilter" 
+                class="form-select" 
+                [(ngModel)]="filters.status"
+                (change)="applyFilters()">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="planTypeFilter" class="form-label">Plan Type</label>
+              <select 
+                id="planTypeFilter" 
+                class="form-select" 
+                [(ngModel)]="filters.planType"
+                (change)="applyFilters()">
+                <option value="">All Plan Types</option>
+                <option value="basic">Basic</option>
+                <option value="premium">Premium</option>
+                <option value="enterprise">Enterprise</option>
+              </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <button type="button" class="btn btn-secondary" (click)="clearFilters()">
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12">
+      <div class="loading-spinner">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="row" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger">{{error}}</div>
+    </div>
+  </div>
+
+  <!-- Subscriptions Table -->
+  <div class="row" *ngIf="!loading && !error">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive" *ngIf="filteredSubscriptions.length > 0">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Plan Name</th>
+                  <th>Plan Type</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let subscription of filteredSubscriptions">
+                  <td>{{subscription.id}}</td>
+                  <td>{{subscription.first_name || ''}} {{subscription.last_name || ''}}</td>
+                  <td>{{subscription.email || ''}}</td>
+                  <td>{{subscription.plan_name || ''}}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{subscription.plan_type || ''}}</span>
+                  </td>
+                  <td>${{subscription.price || 0}}</td>
+                  <td>
+                    <span [class]="'status-' + (subscription.status || '')">
+                      {{(subscription.status || '') | titlecase}}
+                    </span>
+                  </td>
+                  <td>{{subscription.start_date | date}}</td>
+                  <td>{{subscription.end_date | date}}</td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <a 
+                        [routerLink]="['/subscriptions/edit', subscription.id]" 
+                        class="btn btn-sm btn-outline-primary">
+                        Edit
+                      </a>
+                      <button 
+                        type="button" 
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="deleteSubscription(subscription.id)">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div *ngIf="filteredSubscriptions.length === 0" class="text-center py-4">
+            <p class="text-muted">No subscriptions found.</p>
+            <a routerLink="/subscriptions/new" class="btn btn-primary">Create First Subscription</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
